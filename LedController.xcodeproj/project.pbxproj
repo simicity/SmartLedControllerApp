@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		273B995E2CA8A2060067E63B /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 273B995D2CA8A2060067E63B /* SwiftProtobuf */; };
+		273B99602CA8A2060067E63B /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 273B995F2CA8A2060067E63B /* SwiftProtobufPluginLibrary */; };
+		273B99642CA8DDBA0067E63B /* led.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273B99632CA8DDBA0067E63B /* led.pb.swift */; };
 		277A0E382C97AF0D004D8136 /* LedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277A0E372C97AF0D004D8136 /* LedViewModel.swift */; };
 		27C25FBD2C7A8F9A00C748FD /* LedControllerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C25FBC2C7A8F9A00C748FD /* LedControllerApp.swift */; };
 		27C25FBF2C7A8F9A00C748FD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C25FBE2C7A8F9A00C748FD /* ContentView.swift */; };
@@ -18,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		273B99632CA8DDBA0067E63B /* led.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = led.pb.swift; sourceTree = "<group>"; };
 		277A0E372C97AF0D004D8136 /* LedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedViewModel.swift; sourceTree = "<group>"; };
 		27C25FB92C7A8F9A00C748FD /* LedController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LedController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27C25FBC2C7A8F9A00C748FD /* LedControllerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedControllerApp.swift; sourceTree = "<group>"; };
@@ -34,6 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				273B99602CA8A2060067E63B /* SwiftProtobufPluginLibrary in Frameworks */,
+				273B995E2CA8A2060067E63B /* SwiftProtobuf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				27C25FD52C7AD3B100C748FD /* BluetoothManager.swift */,
+				273B99632CA8DDBA0067E63B /* led.pb.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -156,6 +163,7 @@
 			);
 			mainGroup = 27C25FB02C7A8F9A00C748FD;
 			packageReferences = (
+				273B995C2CA8A2060067E63B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 			);
 			productRefGroup = 27C25FBA2C7A8F9A00C748FD /* Products */;
 			projectDirPath = "";
@@ -183,6 +191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				273B99642CA8DDBA0067E63B /* led.pb.swift in Sources */,
 				27C25FBF2C7A8F9A00C748FD /* ContentView.swift in Sources */,
 				27C25FBD2C7A8F9A00C748FD /* LedControllerApp.swift in Sources */,
 				27C25FCB2C7A8FE900C748FD /* LedButtonView.swift in Sources */,
@@ -398,6 +407,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		273B995C2CA8A2060067E63B /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-protobuf/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.28.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		273B995D2CA8A2060067E63B /* SwiftProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 273B995C2CA8A2060067E63B /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobuf;
+		};
+		273B995F2CA8A2060067E63B /* SwiftProtobufPluginLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 273B995C2CA8A2060067E63B /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobufPluginLibrary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 27C25FB12C7A8F9A00C748FD /* Project object */;
 }

@@ -10,36 +10,31 @@ import Foundation
 @Observable class LedViewModel {
     private let btManager = BluetoothManager()
 
-    private let characteristicUUIDString = "9c85a726-b7f1-11ec-b909-0242ac120002"
-
     let leds: [Led] = [
-        Led(name: "Button 1", color: LedColor.red),
-        Led(name: "Button 2", color: LedColor.blue),
-        Led(name: "Button 3", color: LedColor.green),
-        Led(name: "Button 4", color: LedColor.yellow),
+        Led(id: 0, name: "LED 1", color: .ledColorRed),
+        Led(id: 1, name: "LED 2", color: .ledColorBlue),
+        Led(id: 2, name: "LED 3", color: .ledColorGreen),
+        Led(id: 3, name: "LED 4", color: .ledColorYellow),
     ]
+    var prevSelectedLed: Led?
     var selectedLed: Led?
-
-    func updateLedStates() {
-        writeLedState()
-    }
     
-    func writeLedState() {
-        var data = Data()
-        if let led = selectedLed {
-            for i in 0..<LedConstants.ledUnitNum {
-                if i < leds.count && leds[i] == led {
-                    data.append(led.control.toData())
-                } else {
-                    data.append(LedControl(state: LedState.off, color: LedColor.off).toData())
-                }
-            }
-        } else {
-            for _ in 0..<LedConstants.ledUnitNum {
-                data.append(LedControl(state: LedState.off, color: LedColor.off).toData())
+    func toggleLed(selectedLed led: Led) {
+        prevSelectedLed = selectedLed
+        if let prevLed = prevSelectedLed {
+            prevLed.control.ledStateType = .off
+            writeLedState(led: prevLed)
+            if prevLed == led {
+                selectedLed = nil
+                return
             }
         }
-        print(data.map { String(format: "%02X ", $0) }.joined())
-        btManager.writeDataToCharacteristic(data, uuidString: characteristicUUIDString)
+        selectedLed = led
+        led.control.ledStateType = .solid
+        writeLedState(led: led)
+    }
+    
+    func writeLedState(led: Led) {
+        btManager.putLed(ledId: led.id, state: led.control.ledStateType, color: led.control.ledColorType)
     }
 }

@@ -18,7 +18,9 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     private var discoveredCharacteristics = [CBCharacteristic]()
 
     private let serviceUUID = CBUUID(string: "f7547938-68ba-11ec-90d6-0242ac120003")
-    
+    private let getLedcharacteristicUUID = CBUUID(string: "9c85a726-b7f1-11ec-b909-0242ac120002")
+    private let putLedcharacteristicUUID = CBUUID(string: "9c85a726-b7f1-11ec-b909-0242ac120003")
+
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -74,6 +76,20 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         
         for characteristic in characteristics {
             print("Characteristic UUID: \(characteristic.uuid)")
+            // Enable notifications for the characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
+        if error != nil {
+            print("Failed to subscribe to notifications: \(error!)")
+            return
+        }
+        if characteristic.isNotifying {
+            print("Successfully subscribed to notifications for characteristic: \(characteristic.uuid)")
+        } else {
+            print("Unsubscribed from notifications for characteristic: \(characteristic.uuid)")
         }
     }
     
@@ -83,26 +99,73 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             return
         }
 
-        if let data = characteristic.value {
-            print("Received data from \(characteristic.uuid): \(data)")
+        switch characteristic.uuid {
+        case getLedcharacteristicUUID:
+            guard let data = characteristic.value else { return }
+            do {
+                let response = try GetLedResponse(serializedBytes: data)
+//                print("LED (ID: \(response.ledID)) State: \(response.ledControl.ledStateType)")
+//                print("LED (ID: \(response.ledID)) Color: \(response.ledControl.ledColorType)")
+            } catch {
+                print("Error deserializing GetLedResponse: \(error)")
+            }
+        case putLedcharacteristicUUID:
+            guard let data = characteristic.value else { return }
+            do {
+                let response = try PutLedResponse(serializedBytes: data)
+//                print("LED (ID: \(response.ledID)) State: \(response.ledControl.ledStateType)")
+//                print("LED (ID: \(response.ledID)) Color: \(response.ledControl.ledColorType)")
+            } catch {
+                print("Error deserializing PutLedResponse: \(error)")
+            }
+        default:
+            break
+        }
+        
+    }
+
+    func getLed(ledId: UInt32) {
+        guard let peripheral = discoveredPeripheral else { return }
+        guard let characteristic: CBCharacteristic = findCharacteristic(by: getLedcharacteristicUUID) else { return }
+        
+        var getLedRequest = GetLedRequest()
+        getLedRequest.ledID = ledId
+
+        do {
+            let data: Data = try getLedRequest.serializedBytes()
+            peripheral.writeValue(data, for: characteristic, type: .withResponse)
+        } catch {
+            print("Error serializing GetLedRequest: \(error)")
         }
     }
     
-    func readDataFromCharacteristics(uuidString: String) {
+    func putLed(ledId: UInt32, state: LedStateType, color: LedColorType) {
         guard let peripheral = discoveredPeripheral else { return }
-        guard let characteristic: CBCharacteristic = findCharacteristic(by: uuidString) else { return }
-        peripheral.readValue(for: characteristic)
-    }
+        guard let characteristic: CBCharacteristic = findCharacteristic(by: putLedcharacteristicUUID) else { return }
 
-    func writeDataToCharacteristic(_ data: Data, uuidString: String) {
-        guard let peripheral = discoveredPeripheral else { return }
-        guard let characteristic: CBCharacteristic = findCharacteristic(by: uuidString) else { return }
-        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+        var putLedRequest = PutLedRequest()
+        var ledControl = LedControl()
+        ledControl.ledStateType = state
+        ledControl.ledColorType = color
+        
+        putLedRequest.ledID = ledId
+        putLedRequest.ledControl = ledControl
+        
+        do {
+            let data: Data = try putLedRequest.serializedBytes()
+            peripheral.writeValue(data, for: characteristic, type: .withResponse)
+        } catch {
+            print("Error serializing PutLedRequest: \(error)")
+        }
     }
     
     func findCharacteristic(by uuidString: String) -> CBCharacteristic? {
         let characteristicUUID = CBUUID(string: uuidString)
         return discoveredCharacteristics.first { $0.uuid == characteristicUUID }
+    }
+    
+    func findCharacteristic(by uuid: CBUUID) -> CBCharacteristic? {
+        return discoveredCharacteristics.first { $0.uuid == uuid }
     }
 
     func toggleBluetooth() {

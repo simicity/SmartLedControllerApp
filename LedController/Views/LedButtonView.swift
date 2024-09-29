@@ -18,23 +18,11 @@ struct LedButtonView: View {
 
     var body: some View {
         Button {
-            if let currentLed = viewModel.selectedLed {
-                if currentLed == led {
-                    viewModel.selectedLed = nil
-                    viewModel.selectedLed?.control.state = .off
-                } else {
-                    viewModel.selectedLed = led
-                    viewModel.selectedLed?.control.state = .solid
-                }
-            } else {
-                viewModel.selectedLed = led
-                viewModel.selectedLed?.control.state = .solid
-            }
-            viewModel.updateLedStates()
+            viewModel.toggleLed(selectedLed: led)
         } label: {
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: 20.0)
-                    .fill(led.control.color.toColor().opacity(isSelected ? 0.4 : 1.0))
+                    .fill(led.ledColorTypeToColor().opacity(isSelected ? 0.4 : 1.0))
                     .shadow(radius: isSelected ? 0 : 10)
 
                 Text(led.name)
@@ -49,5 +37,5 @@ struct LedButtonView: View {
 }
 
 #Preview {
-    LedButtonView(led: Led(name: "Preview", color: LedColor.red))
+    LedButtonView(led: Led(id: 0, name: "Preview", color: .ledColorRed))
 }
